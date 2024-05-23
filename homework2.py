@@ -1,5 +1,5 @@
 import streamlit as st
-
+from openai import OpenAI
 st.title("30422 배재현🤷‍♂️")
 
 # 탭 생성 : 첫번째 탭의 이름은 Tab A 로, Tab B로 표시합니다.
@@ -80,6 +80,25 @@ with tab3:
                 " 인공 신경망은 **퍼셉트론**(인간의 뉴런에 해당)을 기본 단위로 사용하며, 이 퍼셉트론이 여러 개 연결되어 **심층 인공 신경망(DNN)**을 구성한다."
                 )
     st.video("https://youtu.be/kvAa-76IWHc")
+st.title("💬 Chatbot")
+st.caption("🚀 A Streamlit chatbot powered by OpenAI")
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
 
+for msg in st.session_state.messages:
+    st.chat_message(msg["role"]).write(msg["content"])
+
+if prompt := st.chat_input():
+    #if not openai_api_key:
+    #    st.info("Please add your OpenAI API key to continue.")
+    #    st.stop()
+
+    client = OpenAI(api_key='sk-proj-OUdVkViMxKBaQnp2GnIWT3BlbkFJzY9CHGiBlP9w6pniUQde')
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.chat_message("user").write(prompt)
+    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
+    msg = response.choices[0].message.content
+    st.session_state.messages.append({"role": "assistant", "content": msg})
+    st.chat_message("assistant").write(msg)
 
 
